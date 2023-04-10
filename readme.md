@@ -43,7 +43,7 @@ It is recommended to use a virtual environment to avoid dependency conflicts wit
 
 To run the app, use the following command:
 
-streamlit run app.py
+streamlit run VI_extractions_v0.3.py.py
 
 The app will start, and you should see a message with the URL where you can access it, usually `http://localhost:8501`. Open the URL in your web browser to use the app.
 

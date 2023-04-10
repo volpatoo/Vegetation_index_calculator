@@ -11,6 +11,43 @@ designed to enhance the contribution of vegetation properties and allow
 reliable spatial and temporal inter-comparisons of terrestrial
 photosynthetic activity and canopy structural variations
 
+
+## Requirements
+
+Make sure you have the following installed on your system:
+
+- Python 3.7 or higher (https://www.python.org/downloads/)
+- Streamlit (https://docs.streamlit.io/en/stable/installation.html)
+
+## Installation
+
+1. Clone this repository or download the code as a ZIP file:
+
+git clone https://github.com/msudrybeanbreeding/Vegetation_index_calculator.git
+
+
+If you downloaded the ZIP file, extract it to a folder of your choice.
+
+2. Change to the app directory:
+
+cd your-repo-name
+
+3. Install the required dependencies using pip:
+
+pip install -r requirements.txt
+
+
+It is recommended to use a virtual environment to avoid dependency conflicts with other Python projects.
+
+## Running the App
+
+To run the app, use the following command:
+
+streamlit run app.py
+
+The app will start, and you should see a message with the URL where you can access it, usually `http://localhost:8501`. Open the URL in your web browser to use the app.
+
+
 # Information about channels (Wavelength range for each)
 
 * [nir - near-infrared](https://www.malvernpanalytical.com/br/products/technology/near-infrared-spectroscopy)

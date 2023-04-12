@@ -11,7 +11,7 @@ st.set_page_config(page_title="Vegetation Index Calculator", page_icon=":seedlin
 st.title("Vegetation indices (VIs) for digital phenotyping")
 st.subheader("RGB images only - This algorithm consists in calculating vegetation indices looping through images files and plot numbers.")
 
-libraries = ["numpy", "numpy.ma", "geopandas", "pandas", "os", "fiona", "rasterio.mask", "warnings", "rasterio.features", "streamlit", "psutil"]
+libraries = ["numpy", "numpy.ma", "geopandas", "pandas", "os", "fiona", "rasterio.mask", "warnings", "rasterio.features", "streamlit", "psutil"] 
 
 # write a code to check if the libraries are instaled and up to date
 def check_libraries():
@@ -74,6 +74,7 @@ import time
 
 import zipfile
 import tempfile
+import io
 
 
 with st.expander("**Implemented index list - 73 in total**"):
@@ -183,14 +184,16 @@ if st.sidebar.button("Check libraries"):
 if st.sidebar.button("Check RAM"):
     check_ram()
     
-    
-st.sidebar.write("**1 - Local Shapefile Input**")
-st.sidebar.write("**2 - Plot names from the shapefile attributes**")
-st.sidebar.write("**3 - Select image type - RGB or MS**")
-st.sidebar.write("**4 - Local Image diretory Input**")
-st.sidebar.write("**5 - Select VI to mask the soil**")
-st.sidebar.write("**6 - Select threshold to mask the soil**")
-st.sidebar.write("**6 - Save CSV Dataframe output**")
+
+st.sidebar.write("**1 - Select the data source input**")    
+st.sidebar.write("**2 - Input the Shapefile**")
+st.sidebar.write("**3 - Select PlotID from the shp attributes**")
+st.sidebar.write("**4 - Select image type - RGB or MS**")
+st.sidebar.write("**5 - Image diretory Input**")
+st.sidebar.write("**6 - Select VI to mask the soil**")
+st.sidebar.write("**7 - Select threshold to mask the soil**")
+st.sidebar.write("**8 - Run the analysis**")
+st.sidebar.write("**9 - Save CSV Dataframe output**")
 
 # Class implemented to calculus the index
 # Vegetation indices contribuetions from: 
@@ -990,61 +993,72 @@ class IndexCalculation:
     
     
 
-### Plots shapefiles
-st.markdown("**Local Shapefile Input**")
+upload_local = st.checkbox("Upload shapefile and images locally - local machine run")
 
-shp_path = st.text_input("Enter the file path of the Shapefile (SHP only)")
+if upload_local:
+    st.warning("Running on a local machine is demanded to files larger than 200MB . Check the GitHub repository for more info.")
 
 plot_num_field_name = ""
 
-if shp_path:
-    shp_path = shp_path.strip('"')  # Remove double quotes from the input path
-    if not os.path.exists(shp_path):
-        st.error("Invalid file path. Please provide a valid file path.")
-        st.write(shp_path)
-    elif not shp_path.endswith('.shp'):
-        st.error("Invalid file type. Please upload a shapefile with .shp extension.")
+shp_path = None
+shp_zip_path = None
+shp_file = None
+
+### Plots shapefiles
+st.markdown("**Shapefile Input**")
+
+if upload_local:
+    shp_path = st.text_input("Enter the file path of the Shapefile (SHP only)")
+
+    if shp_path:
+        shp_path = shp_path.strip('"')  # Remove double quotes from the input path
+        if not os.path.exists(shp_path):
+            st.error("Invalid file path. Please provide a valid file path.")
+            st.write(f"Temporary shapefile directory was created at: {shp_path}")
+        elif not shp_path.endswith('.shp'):
+            st.error("Invalid file type. Please upload a shapefile with .shp extension.")
+        else:
+            st.success("Shapefile path uploaded!")
+            try:
+                plots_shp = gpd.read_file(shp_path, driver='ESRI Shapefile')
+                st.write(plots_shp.head(1))
+                print(plots_shp.head(1))
+
+            except Exception as e:
+                st.error(f"Error reading shapefile: {e}")
     else:
-        st.success("Shapefile path uploaded!")
-        try:
-            plots_shp = gpd.read_file(shp_path, driver='ESRI Shapefile')
-            st.write(plots_shp.head(1))
-            print(plots_shp.head(1))
-
-        except Exception as e:
-            st.error(f"Error reading shapefile: {e}")
+        st.error("You need to provide a file path.")
+        
 else:
-    st.error("You need to provide a file path.")
+   
+    shp_zip_path = st.file_uploader("Upload shapefile zip file", type=["zip"])
     
     
-shp_zip_path = st.file_uploader("Upload shapefile zip file", type=["zip"])
-
-
-temp_dir = tempfile.TemporaryDirectory()
-
-if shp_zip_path:
-    with zipfile.ZipFile(shp_zip_path, 'r') as zip_ref:
-        zip_ref.extractall(temp_dir.name)
-
-    shp_file = None
-    for file in os.listdir(temp_dir.name):
-        if file.endswith(".shp"):
-            shp_file = os.path.join(temp_dir.name, file)
-            st.write(shp_file)
-            break
-
-    if shp_file:
-        try:
-            plots_shp = gpd.read_file(shp_file)
-            st.write(plots_shp.head(1))
-        except Exception as e:
-            st.error(f"Error reading shapefile: {e}")
+    temp_dir = tempfile.TemporaryDirectory()
+    
+    if shp_zip_path:
+        with zipfile.ZipFile(shp_zip_path, 'r') as zip_ref:
+            zip_ref.extractall(temp_dir.name)
+    
+        for file in os.listdir(temp_dir.name):
+            if file.endswith(".shp"):
+                shp_file = os.path.join(temp_dir.name, file)
+                st.success("Shapefile file uploaded!")
+                st.write(f"Temporary shapefile directory was created at: {shp_file}")
+                break
+    
+        if shp_file:
+            try:
+                plots_shp = gpd.read_file(shp_file)
+                st.write(plots_shp.head(1))
+            except Exception as e:
+                st.error(f"Error reading shapefile: {e}")
+        else:
+            st.error("No shapefile (.shp) found in uploaded zip file.")
     else:
-        st.error("No shapefile (.shp) found in uploaded zip file.")
-else:
-    st.error("You need to upload a shapefile zip file.")
-    
-
+        st.error("You need to upload a shapefile zip file.")
+        
+   
 # Read column names from the GeoDataFrame
 if 'plots_shp' in locals():
     column_names = plots_shp.columns.tolist()
@@ -1055,7 +1069,7 @@ else:
 if plot_num_field_name:
     st.write("You entered:", plot_num_field_name)
 
-image_type = st.selectbox("Select Image Type",["RGB", "Multispectral"])
+image_type = st.selectbox("**Select Image Type**",["RGB", "Multispectral"])
 
 if image_type == 'RGB':
     st.write("**Visible bands:**\n - Blue\n - Green\n - Red")
@@ -1172,71 +1186,86 @@ default_thresholds_RGB = {
 if image_type == 'RGB':
     
     # Local Image directory Input
-    st.markdown("**Local Image directory Input**")
+    st.markdown("**Image directory Input**")
+        
+    ortho_path= None
+    ortho_files = None
     
-    ortho_path = st.text_input("Enter the file path of the Orthomosaics or reflectance images (.tif only)")
-    if ortho_path:
-        # Remove double quotes from the input path if they exist
-        ortho_path = ortho_path.strip('"')
-        st.write(ortho_path)
-    
-        if not os.path.exists(ortho_path):
-            st.error("Invalid file path. Please provide a valid file path.")
+    if upload_local:
+        ortho_path = st.text_input("Enter the file path of the Orthomosaics (.tif only)")
+        if ortho_path:
+            # Remove double quotes from the input path if they exist
+            ortho_path = ortho_path.strip('"')
+            st.write(f"Temporary ortho directory was created at: {ortho_path}")
+        
+            if not os.path.exists(ortho_path):
+                st.error("Invalid file path. Please provide a valid file path.")
+            else:
+                st.success("Orthomosaic image file path uploaded!")
+                try:
+                    img_list = os.listdir(ortho_path)
+                    img_list = [v for v in img_list if v.endswith('.tif')]
+                    img_list = sorted(img_list)
+        
+                    img_list_names = [str(img) for img in img_list]
+        
+                    st.write(img_list_names)
+                    print(img_list_names)
+                except Exception as e:
+                    st.error(f"Error reading Orthomosaic image data: {e}")
         else:
-            st.success("Orthomosaic image file path uploaded!")
+            st.error("You need to provide a file path.")
+
+    else:
+        ortho_files = st.file_uploader("Upload Orthomosaics (.tif only)", type="tif", accept_multiple_files=True)
+        
+        if ortho_files:
+            img_dir = temp_dir.name
+            st.write(f"Temporary ortho directory was created at: {img_dir}")
+            img_list_names_path = []
+            img_list_names = []
+            for ortho_file in ortho_files:
+                dest_file_path = os.path.join(img_dir, ortho_file.name)
+                with open(dest_file_path, "wb") as dest_file:
+                    dest_file.write(ortho_file.getvalue())
+                img_list_names_path.append(dest_file_path)
+                img_list_names.append(ortho_file.name)
+                #st.success(f"{ortho_file.name} uploaded!")
+        
             try:
-                img_list = os.listdir(ortho_path)
-                img_list = [v for v in img_list if v.endswith('.tif')]
-                img_list = sorted(img_list)
-    
-                img_list_names = [str(img) for img in img_list]
-    
+                img_list_names_path = sorted(img_list_names_path)
+                img_list_names = sorted(img_list_names)
                 st.write(img_list_names)
-                print(img_list_names)
+                print(img_list_names_path)
             except Exception as e:
                 st.error(f"Error reading Orthomosaic image data: {e}")
-    else:
-        st.error("You need to provide a file path.")
+        else:
+            st.error("You need to provide a file path.")
+            
+        required_names = ["blue", "green", "red", "rededge", "nir"]
+        # Function to check if required names are in the list
+        
+        def any_required_names_present(img_list_names, required_names):
+            for img_name in img_list_names:
+                for name in required_names:
+                    if name.lower() in img_name.lower():
+                        return True
+            return False
 
-
-    ortho_files = st.file_uploader("Upload Orthomosaics or reflectance images (.tif only)", type="tif", accept_multiple_files=True)
+   
+    msk_soil_use = st.checkbox("Select a VIs to mask the soil?")
     
-    if ortho_files:
-        img_dir = temp_dir.name
-        st.write(img_dir)
-        img_list_names_path = []
-        img_list_names = []
-        for ortho_file in ortho_files:
-            dest_file_path = os.path.join(img_dir, ortho_file.name)
-            with open(dest_file_path, "wb") as dest_file:
-                dest_file.write(ortho_file.getvalue())
-            img_list_names_path.append(dest_file_path)
-            img_list_names.append(ortho_file.name)
-            st.success(f"{ortho_file.name} uploaded!")
-    
-        try:
-            img_list_names_path = sorted(img_list_names_path)
-            st.write(img_list_names)
-            print(img_list_names_path)
-        except Exception as e:
-            st.error(f"Error reading Orthomosaic image data: {e}")
-    else:
-        st.error("You need to provide a file path.")
-
-
-    
-    vi_msk_soil = st.selectbox("Select VI to mask the soil", list(vi_functions_soil.keys()), index=0)
-    
-
-    if vi_msk_soil in default_thresholds_RGB:
-        min_value = 0.0 
-        max_value = 1.0
-        value_msk_soil = st.number_input(
-            f"Enter the value used as threshold to mask the soil for {vi_msk_soil}",
-            min_value=min_value,
-            max_value=max_value,
-            value=default_thresholds_RGB[vi_msk_soil],
-        )
+    if msk_soil_use:
+        vi_msk_soil = st.selectbox("Select VI to mask the soil", list(vi_functions_soil.keys()), index=5)
+        if vi_msk_soil in default_thresholds_RGB:
+            min_value = 0.0 
+            max_value = 1.0
+            value_msk_soil = st.number_input(
+                f"Enter the value used as threshold to mask the soil for {vi_msk_soil}",
+                min_value=min_value,
+                max_value=max_value,
+                value=default_thresholds_RGB[vi_msk_soil],
+            )
           
     
     vi_selection = st.multiselect("Select the Vegetation Indices to run", list(vi_functions_RGB.keys()), default=list(vi_functions_RGB.keys()))
@@ -1260,17 +1289,16 @@ if image_type == 'RGB':
     ### Creating a list with the image names to save in the final table      
     array = list()   
             
-    def process_tiff_file(tiffile, shp_file, plot_num_field_name, img_dir):
+    def process_tiff_file(tiffile, shp_file0, plot_num_field_name, img_dir0):
                    
         try:
-            print(shp_file)
-            #st.write(shp_file)
-            total_steps = len(fiona.open(shp_file, "r"))
+            print(shp_file0)
+            total_steps = len(fiona.open(shp_file0, "r"))
             progress_bar = st.progress(0)
             
             progress_text = st.empty()
             
-            with fiona.open(shp_file, "r") as shapefile:
+            with fiona.open(shp_file0, "r") as shapefile:
                             
                 for i, feature in enumerate(shapefile):
                     
@@ -1285,7 +1313,7 @@ if image_type == 'RGB':
                     #st.write(Plot_ID,"-",tiffile)
                                                                       
                     # Change the current working directory
-                    os.chdir(img_dir)
+                    os.chdir(img_dir0)
                     #open and mask the multispectral image to the plot
                     
                     with rasterio.open(tiffile, "r") as ras:
@@ -1301,61 +1329,86 @@ if image_type == 'RGB':
                         green = out_image[1,:,:].astype('float32')
                         blue = out_image[2,:,:].astype('float32')
                         
-                   
-
-
+                        # Creating the new matrice with the adjusted bands (with soil)
                         cl.setMatrices(red=red, green=green, blue=blue)
-                                               
-                        msk_soil_function = vi_functions_soil[vi_msk_soil]
-                        msk_soil = msk_soil_function()
-
-
-                        #plt.imshow(HI_msk)
                         
-                        # Removing the R band using a mask obtained from the mask soil and replacing to NaN values (no vlaues)
-                        msk_soil_R = ma.masked_where(msk_soil > value_msk_soil, red)
-                        msk_soil_R = ma.filled(msk_soil_R.astype(float), np.nan)
-                        #plt.imshow(msk_soil_R)
-                        
-                        # Removing the G band using a mask obtained from the mask soil  and replacing to NaN values (no vlaues)
-                        msk_soil_G = ma.masked_where(msk_soil > value_msk_soil, green)
-                        msk_soil_G = ma.filled(msk_soil_G.astype(float), np.nan)
-                        #plt.imshow(msk_soil_G)
-                        
-                        # Removing the B band using a mask obtained from the mask soil  and replacing to NaN values (no vlaues)
-                        msk_soil_B = ma.masked_where(msk_soil > value_msk_soil, blue)
-                        msk_soil_B = ma.filled(msk_soil_B.astype(float), np.nan)
-                        #plt.imshow(msk_soil_B)
-                               
-                        # Creating the new matrice with the adjusted bands (witout soil)
-                        cl.setMatrices(red=msk_soil_R, green=msk_soil_G, blue=msk_soil_B)
-                                                                       
-                        masked_bands = {}
-                        for vi in vi_selection:
-                                masked_band = ma.masked_where(msk_soil > value_msk_soil, vi_functions_RGB[vi]())
-                                masked_band = ma.filled(masked_band.astype(float), np.nan)
-                                masked_bands[vi] = masked_band
-
-                       
-                        array.append(
-                            [tiffile, Plot_ID] +
-                            [
-                                np.nanmean(msk_soil_R.flatten()), np.nanmedian(msk_soil_R.flatten()), np.count_nonzero(~np.isnan(msk_soil_R.flatten())), np.nanstd(msk_soil_R.flatten()),
-                                np.nanmean(msk_soil_G.flatten()), np.nanmedian(msk_soil_G.flatten()), np.count_nonzero(~np.isnan(msk_soil_G.flatten())), np.nanstd(msk_soil_G.flatten()),
-                                np.nanmean(msk_soil_B.flatten()), np.nanmedian(msk_soil_B.flatten()), np.count_nonzero(~np.isnan(msk_soil_B.flatten())), np.nanstd(msk_soil_B.flatten())
-                            ] +
-                            [
-                                value
-                                for vi in vi_selection
-                                for value in [
-                                    np.nanmean(masked_bands[vi].flatten()),
-                                    np.nanmedian(masked_bands[vi].flatten()),
-                                    np.count_nonzero(~np.isnan(masked_bands[vi].flatten())),
-                                    np.nanstd(masked_bands[vi].flatten()),
+                        if msk_soil_use:
+                                             
+                            msk_soil_function = vi_functions_soil[vi_msk_soil]
+                            msk_soil = msk_soil_function()
+    
+    
+                            #plt.imshow(HI_msk)
+                            
+                            # Removing the R band using a mask obtained from the mask soil and replacing to NaN values (no vlaues)
+                            msk_soil_R = ma.masked_where(msk_soil > value_msk_soil, red)
+                            msk_soil_R = ma.filled(msk_soil_R.astype(float), np.nan)
+                            #plt.imshow(msk_soil_R)
+                            
+                            # Removing the G band using a mask obtained from the mask soil  and replacing to NaN values (no vlaues)
+                            msk_soil_G = ma.masked_where(msk_soil > value_msk_soil, green)
+                            msk_soil_G = ma.filled(msk_soil_G.astype(float), np.nan)
+                            #plt.imshow(msk_soil_G)
+                            
+                            # Removing the B band using a mask obtained from the mask soil  and replacing to NaN values (no vlaues)
+                            msk_soil_B = ma.masked_where(msk_soil > value_msk_soil, blue)
+                            msk_soil_B = ma.filled(msk_soil_B.astype(float), np.nan)
+                            #plt.imshow(msk_soil_B)
+                                   
+                            # Creating the new matrice with the adjusted bands (witout soil)
+                            cl.setMatrices(red=msk_soil_R, green=msk_soil_G, blue=msk_soil_B)
+                                                                           
+                            masked_bands = {}
+                            for vi in vi_selection:
+                                    masked_band = ma.masked_where(msk_soil > value_msk_soil, vi_functions_RGB[vi]())
+                                    masked_band = ma.filled(masked_band.astype(float), np.nan)
+                                    masked_bands[vi] = masked_band
+    
+                           
+                            array.append(
+                                [tiffile, Plot_ID] +
+                                [
+                                    np.nanmean(msk_soil_R.flatten()), np.nanmedian(msk_soil_R.flatten()), np.count_nonzero(~np.isnan(msk_soil_R.flatten())), np.nanstd(msk_soil_R.flatten()),
+                                    np.nanmean(msk_soil_G.flatten()), np.nanmedian(msk_soil_G.flatten()), np.count_nonzero(~np.isnan(msk_soil_G.flatten())), np.nanstd(msk_soil_G.flatten()),
+                                    np.nanmean(msk_soil_B.flatten()), np.nanmedian(msk_soil_B.flatten()), np.count_nonzero(~np.isnan(msk_soil_B.flatten())), np.nanstd(msk_soil_B.flatten())
+                                ] +
+                                [
+                                    value
+                                    for vi in vi_selection
+                                    for value in [
+                                        np.nanmean(masked_bands[vi].flatten()),
+                                        np.nanmedian(masked_bands[vi].flatten()),
+                                        np.count_nonzero(~np.isnan(masked_bands[vi].flatten())),
+                                        np.nanstd(masked_bands[vi].flatten()),
+                                    ]
                                 ]
-                            ]
-                        )
-
+                            )
+                        else:                                   
+                                                                            
+                             masked_bands = {}
+                             for vi in vi_selection:
+                                     masked_band = vi_functions_RGB[vi]()
+                                     masked_bands[vi] = masked_band
+     
+                            
+                             array.append(
+                                 [tiffile, Plot_ID] +
+                                 [
+                                     np.nanmean(red.flatten()), np.nanmedian(red.flatten()), np.count_nonzero(~np.isnan(red.flatten())), np.nanstd(red.flatten()),
+                                     np.nanmean(green.flatten()), np.nanmedian(green.flatten()), np.count_nonzero(~np.isnan(green.flatten())), np.nanstd(green.flatten()),
+                                     np.nanmean(blue.flatten()), np.nanmedian(blue.flatten()), np.count_nonzero(~np.isnan(blue.flatten())), np.nanstd(blue.flatten())
+                                 ] +
+                                 [
+                                     value
+                                     for vi in vi_selection
+                                     for value in [
+                                         np.nanmean(masked_bands[vi].flatten()),
+                                         np.nanmedian(masked_bands[vi].flatten()),
+                                         np.count_nonzero(~np.isnan(masked_bands[vi].flatten())),
+                                         np.nanstd(masked_bands[vi].flatten()),
+                                     ]
+                                 ]
+                             ) 
 
             progress_bar.empty()
             time.sleep(0.1)  
@@ -1365,45 +1418,71 @@ if image_type == 'RGB':
             
     # Create a form to collect the CSV file name and the local machine path
     st.markdown("**Save CSV Dataframe**")  
-    csv_file_name = st.text_input("Enter the CSV file name:")
-    local_path = st.text_input("Enter the local machine path to save the file:")    
+    if msk_soil_use:
+        csv_file_name = "_".join(["VIs", image_type, "soil_rem", vi_msk_soil, str(value_msk_soil)]) + ".csv"
+    else:
+        csv_file_name = "_".join(["VIs", image_type, "no_soil_rem"]) + ".csv"
+
+    st.write(f"File name: {csv_file_name}")
+
+    
+    if upload_local:
+        local_path = st.text_input("Enter the local machine path to save the file:")    
 
             
     # Check if all required parameters are provided
-    if shp_path or shp_zip_path and plot_num_field_name and ortho_path or ortho_files:
-        # Display the 'Run VIs' button if all parameters are provided
-        if st.button('Run VIs'):
-            for tiffile in img_list_names:
-                try:                   
-                                                          
-                    if shp_path.strip() != '' and ortho_path.strip() != '':
-                        #st.success(f"{tiffile} uploaded by user!")
-                        process_tiff_file(tiffile, shp_path, plot_num_field_name, ortho_path)
-                    elif shp_file is not None and img_dir is not None:
-                        #st.success(f"{tiffile} uploaded online!")
-                        process_tiff_file(tiffile, shp_file, plot_num_field_name, img_dir)
-
-                except Exception as e:
-                    st.write("An error occurred while processing the file:", tiffile)
-                    st.write("Error:", e)
-                    continue
-           
-            if len(array) > 0:
-                my_array = np.array(array)
-                dataframe = pd.DataFrame(my_array, columns=colname)
-                st.success("All TIFF files processed successfully.")
-                st.write(dataframe)
+    if (shp_path or shp_zip_path) and plot_num_field_name and (ortho_path or ortho_files):
+        required_names = ["blue", "green", "red", "rededge", "nir"]
+    
+        if image_type == "RGB" and any_required_names_present(img_list_names, required_names):
+            st.error("RGB selected, but multispectral files found in the uploaded files. Please remove the multispectral files or change the image type.")
+        else:
+            if st.button('Run VIs'):
+                for tiffile in img_list_names:
+                    try:                   
+                        if shp_path is not None:                                   
+                            if shp_path.strip() != '' and ortho_path.strip() != '':
+                                #st.success(f"{tiffile} uploaded by user!")
+                                process_tiff_file(tiffile, shp_path, plot_num_field_name, ortho_path)
+                        elif shp_file is not None and img_dir is not None:
+                            #st.success(f"{tiffile} uploaded online!")
+                            process_tiff_file(tiffile, shp_file, plot_num_field_name, img_dir)
+    
+                    except Exception as e:
+                        st.write("An error occurred while processing the file:", tiffile)
+                        st.write("Error:", e)
+                        continue
+               
+                if len(array) > 0:
+                    my_array = np.array(array)
+                    dataframe = pd.DataFrame(my_array, columns=colname)
+                    st.success("All TIFF files processed successfully.")
+                    st.write(dataframe)
                 
-                if dataframe is None or colname is None:
-                    st.error("dataframe or colname is empty or None")
+                    if dataframe is None or colname is None:
+                        st.error("dataframe or colname is empty or None")
+                    elif upload_local:
+                        dataframe.to_csv(local_path + '/' + csv_file_name, index=False)
+                        st.success("File saved successfully!")
+                    else:
+                        csv_buffer = None
+                        
+                        if dataframe is not None and colname is not None:
+                            csv_buffer = io.BytesIO()
+                            dataframe.to_csv(csv_buffer, index=False)
+                            csv_buffer.seek(0)
+                
+                        if shp_file is not None and img_dir is not None:
+                            if st.download_button(label="Download CSV file", data=csv_buffer, file_name=f"{csv_file_name}", mime="text/csv"):
+                                st.success("Download started!")
                 else:
-                    dataframe.to_csv(local_path + '/' + csv_file_name + '.csv', index=False)
-                    st.success("File saved successfully!")
-            else:
-                st.error("No data to process. Please check if the provided files are correct.")
-
+                    st.error("No data to process. Please check if the provided files are correct.")
+                    
     else:
-        st.warning("Please provide all required parameters (Orthomosaic and shapefile path, and field name) to enable the 'Run VIs' button.")
+        st.error("Please provide all the required parameters.")
+                        
+                    
+    
 
 
 #######################################################################
@@ -1543,58 +1622,96 @@ else:
     }        
       
     ### Image directory (.tif aka MS)     
-    st.markdown("**Local Image directory Input**")    
-    # def main():
-    ms_path = st.text_input("Enter the file path of Reflectance maps (.tif only)")
+    st.markdown("**Image directory Input**")    
+    ms_path= None
+    ms_files = None
     
-    if ms_path:
-        # Remove double quotes from the input path if they exist
-        ms_path = ms_path.strip('"')
-    
-        if not os.path.exists(ms_path):
-            st.error("Invalid file path. Please provide a valid file path.")
+    if upload_local:
+        ms_path = st.text_input("Enter the file path of Reflectance maps (.tif only)")
+        
+        if ms_path:
+            # Remove double quotes from the input path if they exist
+            ms_path = ms_path.strip('"')
+        
+            if not os.path.exists(ms_path):
+                st.error("Invalid file path. Please provide a valid file path.")
+            else:
+                st.success("Multispectral image file path uploaded!")
+                try:
+                    img_list = os.listdir(ms_path)
+                    img_list = [v for v in img_list if v.endswith('.tif')]
+                    img_list = sorted(img_list)
+        
+                    img_list_names = []
+        
+                    for l in range(len(img_list)):
+                        #print(l)
+                        img_list_names.append(str(img_list[l]))
+        
+                    st.write(img_list_names)
+                    print(img_list_names)
+        
+                except Exception as e:
+                    st.error(f"Error reading Multispectral image data: {e}")
         else:
-            st.success("Multispectral image file path uploaded!")
+            st.error("You need to provide a file path.")
+    else:
+
+        ms_files = st.file_uploader("Upload reflectance maps (.tif only)", type="tif", accept_multiple_files=True)
+            
+        if ms_files:
+            img_dir = temp_dir.name
+            st.write(f"Temporary ortho directory was created at: {img_dir}")
+            img_list_names_path = []
+            img_list_names = []
+            for ms_file in ms_files:
+                dest_file_path = os.path.join(img_dir, ms_file.name)
+                with open(dest_file_path, "wb") as dest_file:
+                    dest_file.write(ms_file.getvalue())
+                img_list_names_path.append(dest_file_path)
+                img_list_names.append(ms_file.name)
+                #st.success(f"{ms_file.name} uploaded!")
+        
             try:
-                img_list = os.listdir(ms_path)
-                img_list = [v for v in img_list if v.endswith('.tif')]
-                img_list = sorted(img_list)
-    
-                img_list_names = []
-    
-                for l in range(len(img_list)):
-                    #print(l)
-                    img_list_names.append(str(img_list[l]))
-    
+                img_list_names_path = sorted(img_list_names_path)
+                img_list_names = sorted(img_list_names)
                 st.write(img_list_names)
-                print(img_list_names)
-    
+                print(img_list_names_path)
             except Exception as e:
                 st.error(f"Error reading Multispectral image data: {e}")
-    else:
-        st.error("You need to provide a file path.")
-
-        
-        
+        else:
+            st.error("You need to provide a file path.")   
+    
+            
+    required_names = ["blue", "green", "red", "rededge", "nir"]
+    # Function to check if required names are in the list
+    def required_names_present(file_list, required_names):
+        for name in required_names:
+            if not any(name in file for file in file_list):
+                return False
+        return True
+       
     selected_bands=[3, 4, 5, 6, 7, 8, 9, 10]
     nbands = st.selectbox("Select the number of bands to use:", selected_bands, index = 2)
     
-    st.info("You selected {} bands, the app will proceed to extract vegetation index. Note, data set tested and validated to MicaSense RedEdge-MX camera. Make sure the .tif (reflectance maps) names include the band name in the file name.".format(nbands))
+    st.info("You selected {} bands, the app will proceed to extract vegetation index. Note, data set tested and validated to MicaSense RedEdge-MX camera. Make sure the .tif (reflectance maps) names include the band name in the file name without space.".format(nbands))
     
-    vi_msk_soil = st.selectbox("Select VI to mask the soil", list(vi_functions_soil.keys()), index=0)
-    
-    if vi_msk_soil in default_thresholds_MS:
-        min_value = 0.0 
-        #min_value = 0.0 if vi_msk_soil in ["ExG", "ExG_ExR","ExGR", "NDI","EXR", "GLI", "HI", "NDRBI", "NGBDI", "NGRDI", "TNDGR", "VARI", "TGI", "NDVI", "GNDVI", "GRNDVI", "ATSAVI", "GOSAVI", "GSAVI", "MSAVI", "NDRE", "EVI"] else 50.0
-        #max_value = 180.0 if vi_msk_soil == "HUE" else 1.0
-        max_value = 1.0
-        value_msk_soil = st.number_input(
-            f"Enter the value used as threshold to mask the soil for {vi_msk_soil}",
-            min_value=min_value,
-            max_value=max_value,
-            value=default_thresholds_MS[vi_msk_soil],
-        )
-    
+    msk_soil_use = st.checkbox("Select a VIs to mask the soil?")
+       
+    if msk_soil_use:
+        vi_msk_soil = st.selectbox("Select VI to mask the soil", list(vi_functions_soil.keys()), index=0)
+        if vi_msk_soil in default_thresholds_MS:
+            min_value = 0.0 
+            #min_value = 0.0 if vi_msk_soil in ["ExG", "ExG_ExR","ExGR", "NDI","EXR", "GLI", "HI", "NDRBI", "NGBDI", "NGRDI", "TNDGR", "VARI", "TGI", "NDVI", "GNDVI", "GRNDVI", "ATSAVI", "GOSAVI", "GSAVI", "MSAVI", "NDRE", "EVI"] else 50.0
+            #max_value = 180.0 if vi_msk_soil == "HUE" else 1.0
+            max_value = 1.0
+            value_msk_soil = st.number_input(
+                f"Enter the value used as threshold to mask the soil for {vi_msk_soil}",
+                min_value=min_value,
+                max_value=max_value,
+                value=default_thresholds_MS[vi_msk_soil],
+            )
+        
     vi_selection = st.multiselect("Select the Vegetation Indices to run", list(vi_functions_MS.keys()), default=list(vi_functions_MS.keys()))
  
     def get_colname_for_vi(vi):
@@ -1622,12 +1739,13 @@ else:
         
     array = list()   
         
-    def process_reflectance_file(shp_file, plot_num_field_name, img_dir):
+    def process_reflectance_file(shp_file0, plot_num_field_name, img_dir0):
         try:
                                        
             info_flights = int(len(img_list_names)/nbands)
             print(f"Number of flights: {info_flights}")
             st.info(f"Number of flights: {info_flights}") 
+            print(shp_file0)
                          
             startnbands=0 
             for t in range(info_flights):  
@@ -1641,12 +1759,12 @@ else:
                 ms_flight = img_list_names[(startnbands):(((t+1)*nbands))]
                 st.write(ms_flight)
             
-                total_steps = len(fiona.open(shp_file, "r"))
+                total_steps = len(fiona.open(shp_file0, "r"))
                 progress_bar = st.progress(0)
                 
                 progress_text = st.empty()
                 
-                with fiona.open(shp_file, "r") as shapefile:
+                with fiona.open(shp_file0, "r") as shapefile:
                 
                     for i, feature in enumerate(shapefile):
                 
@@ -1659,7 +1777,7 @@ else:
                         Plot_ID = feature["properties"][plot_num_field_name]
                         
                         # Change the current working directory
-                        os.chdir(img_dir)
+                        os.chdir(img_dir0)
                         #open and mask the multispectral image to the plot
                         def get_band_file(band_name, ms_flight):
                             for file in ms_flight:
@@ -1701,69 +1819,100 @@ else:
                         with rasterio.open(red_file, "r") as ras:
                             out_image_red, out_transform_red = mask(ras, shape_plt, crop=True, nodata=0)
                             out_image_red = ma.masked_where(out_image_red == 0, out_image_red)
-                            out_image_red = ma.filled(out_image_red.astype(float), np.nan)                                 
-                                   
+                            out_image_red = ma.filled(out_image_red.astype(float), np.nan) 
+                                
+                            # Creating the new matrice with the adjusted bands (with soil)       
                             cl.setMatrices(red=out_image_red, green=out_image_green, blue=out_image_blue, redEdge=out_image_redEdge, nir=out_image_nir)
-                                         
-                            msk_soil_function = vi_functions_soil[vi_msk_soil]
-                            msk_soil = msk_soil_function()
-                            
-                            # Removing the R band using a mask obrained from the HI and replacing to NaN values (no vlaues)
-                            msk_soil_R = ma.masked_where(msk_soil < value_msk_soil, out_image_red)
-                            msk_soil_R = ma.filled(msk_soil_R.astype(float), np.nan)
-                            #plt.imshow(msk_soil_R)
-                            
-                            # Removing the G band using a mask obrained from the HI and replacing to NaN values (no vlaues)
-                            msk_soil_G = ma.masked_where(msk_soil < value_msk_soil, out_image_green)
-                            msk_soil_G = ma.filled(msk_soil_G.astype(float), np.nan)
-                            #plt.imshow(msk_soil_G)
-                            
-                            # Removing the B band using a mask obrained from the HI and replacing to NaN values (no vlaues)
-                            msk_soil_B = ma.masked_where(msk_soil < value_msk_soil, out_image_blue)
-                            msk_soil_B = ma.filled(msk_soil_B.astype(float), np.nan)
-                            #plt.imshow(msk_soil_B)
+                                 
+                            if msk_soil_use:
+                                
+                                msk_soil_function = vi_functions_soil[vi_msk_soil]
+                                msk_soil = msk_soil_function()
+                                
+                                # Removing the R band using a mask obrained from the HI and replacing to NaN values (no vlaues)
+                                msk_soil_R = ma.masked_where(msk_soil < value_msk_soil, out_image_red)
+                                msk_soil_R = ma.filled(msk_soil_R.astype(float), np.nan)
+                                #plt.imshow(msk_soil_R)
+                                
+                                # Removing the G band using a mask obrained from the HI and replacing to NaN values (no vlaues)
+                                msk_soil_G = ma.masked_where(msk_soil < value_msk_soil, out_image_green)
+                                msk_soil_G = ma.filled(msk_soil_G.astype(float), np.nan)
+                                #plt.imshow(msk_soil_G)
+                                
+                                # Removing the B band using a mask obrained from the HI and replacing to NaN values (no vlaues)
+                                msk_soil_B = ma.masked_where(msk_soil < value_msk_soil, out_image_blue)
+                                msk_soil_B = ma.filled(msk_soil_B.astype(float), np.nan)
+                                #plt.imshow(msk_soil_B)
+        
+                                # Removing the redEdge band using a mask obrained from the HI and replacing to NaN values (no vlaues)
+                                msk_soil_RE = ma.masked_where(msk_soil < value_msk_soil, out_image_redEdge)
+                                msk_soil_RE = ma.filled(msk_soil_RE.astype(float), np.nan)
+                                
+                                # Removing the Nir band using a mask obrained from the HI and replacing to NaN values (no vlaues)
+                                msk_soil_Nir = ma.masked_where(msk_soil < value_msk_soil, out_image_nir)
+                                msk_soil_Nir = ma.filled(msk_soil_Nir.astype(float), np.nan)  
+                              
+                                
+                                # Creating the new matrice with the adjusted bands (witout soil)
+                                cl.setMatrices(red=msk_soil_R, green=msk_soil_G, blue=msk_soil_B, redEdge= msk_soil_RE, nir= msk_soil_Nir)
+                                
+                               
+                                masked_bands = {}
+                                for vi in vi_selection:
+                                        masked_band = ma.masked_where(msk_soil < value_msk_soil, vi_functions_MS[vi]())
+                                        masked_band = ma.filled(masked_band.astype(float), np.nan)
+                                        masked_bands[vi] = masked_band
+                                        
     
-                            # Removing the redEdge band using a mask obrained from the HI and replacing to NaN values (no vlaues)
-                            msk_soil_RE = ma.masked_where(msk_soil < value_msk_soil, out_image_redEdge)
-                            msk_soil_RE = ma.filled(msk_soil_RE.astype(float), np.nan)
-                            
-                            # Removing the Nir band using a mask obrained from the HI and replacing to NaN values (no vlaues)
-                            msk_soil_Nir = ma.masked_where(msk_soil < value_msk_soil, out_image_nir)
-                            msk_soil_Nir = ma.filled(msk_soil_Nir.astype(float), np.nan)  
-                          
-                            
-                            # Creating the new matrice with the adjusted bands (witout soil)
-                            cl.setMatrices(red=msk_soil_R, green=msk_soil_G, blue=msk_soil_B, redEdge= msk_soil_RE, nir= msk_soil_Nir)
-                            
-                           
-                            masked_bands = {}
-                            for vi in vi_selection:
-                                    masked_band = ma.masked_where(msk_soil < value_msk_soil, vi_functions_MS[vi]())
-                                    masked_band = ma.filled(masked_band.astype(float), np.nan)
-                                    masked_bands[vi] = masked_band
-                                    
-
-                           
-                            array.append(
-                                [ms_flight[0][0:6], Plot_ID] +
-                                [
-                                     np.nanmean(msk_soil_R.flatten()),np.nanmedian(msk_soil_R.flatten()),np.count_nonzero(~np.isnan(msk_soil_R.flatten())),np.nanstd(msk_soil_R.flatten()),
-                                     np.nanmean(msk_soil_G.flatten()),np.nanmedian(msk_soil_G.flatten()),np.count_nonzero(~np.isnan(msk_soil_G.flatten())),np.nanstd(msk_soil_G.flatten()),
-                                     np.nanmean(msk_soil_B.flatten()),np.nanmedian(msk_soil_B.flatten()),np.count_nonzero(~np.isnan(msk_soil_B.flatten())),np.nanstd(msk_soil_B.flatten()),
-                                     np.nanmean(msk_soil_RE.flatten()),np.nanmedian(msk_soil_RE.flatten()),np.count_nonzero(~np.isnan(msk_soil_RE.flatten())),np.nanstd(msk_soil_RE.flatten()),
-                                     np.nanmean(msk_soil_Nir.flatten()),np.nanmedian(msk_soil_Nir.flatten()),np.count_nonzero(~np.isnan(msk_soil_Nir.flatten())),np.nanstd(msk_soil_Nir.flatten())
-                                ] +
-                                [
-                                    value
-                                    for vi in vi_selection
-                                    for value in [
-                                        np.nanmean(masked_bands[vi].flatten()),
-                                        np.nanmedian(masked_bands[vi].flatten()),
-                                        np.count_nonzero(~np.isnan(masked_bands[vi].flatten())),
-                                        np.nanstd(masked_bands[vi].flatten()),
+                               
+                                array.append(
+                                    [ms_flight[0][0:6], Plot_ID] +
+                                    [
+                                         np.nanmean(msk_soil_R.flatten()),np.nanmedian(msk_soil_R.flatten()),np.count_nonzero(~np.isnan(msk_soil_R.flatten())),np.nanstd(msk_soil_R.flatten()),
+                                         np.nanmean(msk_soil_G.flatten()),np.nanmedian(msk_soil_G.flatten()),np.count_nonzero(~np.isnan(msk_soil_G.flatten())),np.nanstd(msk_soil_G.flatten()),
+                                         np.nanmean(msk_soil_B.flatten()),np.nanmedian(msk_soil_B.flatten()),np.count_nonzero(~np.isnan(msk_soil_B.flatten())),np.nanstd(msk_soil_B.flatten()),
+                                         np.nanmean(msk_soil_RE.flatten()),np.nanmedian(msk_soil_RE.flatten()),np.count_nonzero(~np.isnan(msk_soil_RE.flatten())),np.nanstd(msk_soil_RE.flatten()),
+                                         np.nanmean(msk_soil_Nir.flatten()),np.nanmedian(msk_soil_Nir.flatten()),np.count_nonzero(~np.isnan(msk_soil_Nir.flatten())),np.nanstd(msk_soil_Nir.flatten())
+                                    ] +
+                                    [
+                                        value
+                                        for vi in vi_selection
+                                        for value in [
+                                            np.nanmean(masked_bands[vi].flatten()),
+                                            np.nanmedian(masked_bands[vi].flatten()),
+                                            np.count_nonzero(~np.isnan(masked_bands[vi].flatten())),
+                                            np.nanstd(masked_bands[vi].flatten()),
+                                        ]
                                     ]
-                                ]
-                            )
+                                )
+                                
+                            else:                               
+                               
+                                masked_bands = {}
+                                for vi in vi_selection:
+                                        masked_band = vi_functions_MS[vi]()
+                                        masked_bands[vi] = masked_band
+                               
+                                array.append(
+                                    [ms_flight[0][0:6], Plot_ID] +
+                                    [
+                                         np.nanmean(out_image_red.flatten()),np.nanmedian(out_image_red.flatten()),np.count_nonzero(~np.isnan(out_image_red.flatten())),np.nanstd(out_image_red.flatten()),
+                                         np.nanmean(out_image_green.flatten()),np.nanmedian(out_image_green.flatten()),np.count_nonzero(~np.isnan(out_image_green.flatten())),np.nanstd(out_image_green.flatten()),
+                                         np.nanmean(out_image_blue.flatten()),np.nanmedian(out_image_blue.flatten()),np.count_nonzero(~np.isnan(out_image_blue.flatten())),np.nanstd(out_image_blue.flatten()),
+                                         np.nanmean(out_image_redEdge.flatten()),np.nanmedian(out_image_redEdge.flatten()),np.count_nonzero(~np.isnan(out_image_redEdge.flatten())),np.nanstd(out_image_redEdge.flatten()),
+                                         np.nanmean(out_image_nir.flatten()),np.nanmedian(out_image_nir.flatten()),np.count_nonzero(~np.isnan(out_image_nir.flatten())),np.nanstd(out_image_nir.flatten())
+                                    ] +
+                                    [
+                                        value
+                                        for vi in vi_selection
+                                        for value in [
+                                            np.nanmean(masked_bands[vi].flatten()),
+                                            np.nanmedian(masked_bands[vi].flatten()),
+                                            np.count_nonzero(~np.isnan(masked_bands[vi].flatten())),
+                                            np.nanstd(masked_bands[vi].flatten()),
+                                        ]
+                                    ]
+                                )
                             
                 progress_bar.empty()
                 time.sleep(0.1)  
@@ -1772,32 +1921,71 @@ else:
             st.error(e)   
                                 
     # Create a form to collect the CSV file name and the local machine path
+    # Create a form to collect the CSV file name and the local machine path
     st.markdown("**Save CSV Dataframe**")  
-    csv_file_name = st.text_input("Enter the CSV file name:")
-    local_path = st.text_input("Enter the local machine path to save the file:")        
-            
-    if st.button('Run VIs'):
-        try:
-            
-            if shp_path is not None:
-                process_reflectance_file(shp_path, plot_num_field_name, ms_path)
-            else:
-                process_reflectance_file(shp_zip_path, plot_num_field_name, ms_path)
-            
-        except Exception as e:
-            st.write("Error:", e)
-        my_array = np.array(array)
-        dataframe = pd.DataFrame(my_array, columns = colname)  
-        st.success("All TIFF files processed successfully.")
-        st.write(dataframe)  
-        
-        if dataframe is None or colname is None:
-            st.error("dataframe or colname is empty or None")
-        else:
-            dataframe.to_csv(local_path + '/' + csv_file_name + '.csv', index=False)
-            st.success("File saved successfully!")        
+    if msk_soil_use:
+        csv_file_name = "_".join(["VIs", image_type, "soil_rem", vi_msk_soil, str(value_msk_soil)]) + ".csv"
+    else:
+        csv_file_name = "_".join(["VIs", image_type, "no_soil_rem"]) + ".csv"
+
+    st.write(f"File name: {csv_file_name}")
 
     
+    if upload_local:
+        local_path = st.text_input("Enter the local machine path to save the file:")    
+
+            
+    # Check if all required parameters are provided
+    if (shp_path or shp_zip_path) and plot_num_field_name and (ms_path or ms_files):
+        required_names = ["blue", "green", "red", "rededge", "nir"]
+    
+        if image_type == "Multispectral" and not required_names_present(img_list_names, required_names):
+            st.error("All required multispectral files are not present. Please upload files containing 'blue', 'green', 'red', 'rededge', and 'nir' in their names.")
+        else:
+            if st.button('Run VIs'):
+                try:                   
+                    if shp_path is not None:                                   
+                        if shp_path.strip() != '' and ms_path.strip() != '':
+                            process_reflectance_file(shp_path, plot_num_field_name, ms_path)
+                    elif shp_file is not None and img_dir is not None:
+                        process_reflectance_file(shp_file, plot_num_field_name, img_dir)
+    
+                except Exception as e:
+                    st.write("An error occurred while processing the file:", ms_path)
+                    st.write("Error:", e)
+           
+                if len(array) > 0:
+                    my_array = np.array(array)
+                    dataframe = pd.DataFrame(my_array, columns=colname)
+                    st.success("All TIFF files processed successfully.")
+                    st.write(dataframe)
+                
+                    if dataframe is None or colname is None:
+                        st.error("dataframe or colname is empty or None")
+                    elif upload_local:
+                        dataframe.to_csv(local_path + '/' + csv_file_name, index=False)
+                        st.success("File saved successfully!")
+                    else: 
+                        csv_buffer = None
+                        
+                        if dataframe is not None and colname is not None:
+                            csv_buffer = io.BytesIO()
+                            dataframe.to_csv(csv_buffer, index=False)
+                            csv_buffer.seek(0)
+                
+                        if shp_file is not None and img_dir is not None:
+                            if st.download_button(label="Download CSV file", data=csv_buffer, file_name=f"{csv_file_name}", mime="text/csv"):
+                                st.success("Download started!")
+                else:
+                    st.error("No data to process. Please check if the provided files are correct.")          
+ 
+    else:
+        st.error("Please provide all the required parameters.")
+                
+
+
+
+
 
 
 

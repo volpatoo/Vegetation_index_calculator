@@ -1,10 +1,11 @@
 # *Python script to perform Vegetation indices (VIs) for phenotyping*
-# Class Summary
+> Developed and maintained by [Dr. Volpato](https://github.com/volpatoo)
+## Class Summary
 > This algorithm consists in calculating vegetation indices looping through images files and plot numbers. These
 indices can be used for precision agriculture for example (or remote sensing). There are functions to define the data and to calculate the
 implemented indices.
 
-# [Vegetation index](https://en.wikipedia.org/wiki/Vegetation_Index)
+## [Vegetation index](https://en.wikipedia.org/wiki/Vegetation_Index)
 
 A Vegetation Index (VI) is a spectral transformation of two or more bands
 designed to enhance the contribution of vegetation properties and allow

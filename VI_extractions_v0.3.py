@@ -8,7 +8,7 @@ import subprocess
 
 st.set_page_config(page_title="Vegetation Index Calculator", page_icon=":seedling:", layout="wide")
 
-st.title("Vegetation indices (VIs) for phenotyping - v01")
+st.title("Vegetation indices (VIs) for digital phenotyping")
 st.subheader("RGB images only - This algorithm consists in calculating vegetation indices looping through images files and plot numbers.")
 
 libraries = ["numpy", "numpy.ma", "geopandas", "pandas", "os", "fiona", "rasterio.mask", "warnings", "rasterio.features", "streamlit", "psutil"]
@@ -71,6 +71,10 @@ from rasterio.mask import mask
 import streamlit as st
 from psutil import virtual_memory
 import time
+
+import zipfile
+import tempfile
+
 
 with st.expander("**Implemented index list - 73 in total**"):
     df = pd.DataFrame(
@@ -997,6 +1001,7 @@ if shp_path:
     shp_path = shp_path.strip('"')  # Remove double quotes from the input path
     if not os.path.exists(shp_path):
         st.error("Invalid file path. Please provide a valid file path.")
+        st.write(shp_path)
     elif not shp_path.endswith('.shp'):
         st.error("Invalid file type. Please upload a shapefile with .shp extension.")
     else:
@@ -1010,8 +1015,35 @@ if shp_path:
             st.error(f"Error reading shapefile: {e}")
 else:
     st.error("You need to provide a file path.")
+    
+    
+shp_zip_path = st.file_uploader("Upload shapefile zip file", type=["zip"])
 
 
+temp_dir = tempfile.TemporaryDirectory()
+
+if shp_zip_path:
+    with zipfile.ZipFile(shp_zip_path, 'r') as zip_ref:
+        zip_ref.extractall(temp_dir.name)
+
+    shp_file = None
+    for file in os.listdir(temp_dir.name):
+        if file.endswith(".shp"):
+            shp_file = os.path.join(temp_dir.name, file)
+            st.write(shp_file)
+            break
+
+    if shp_file:
+        try:
+            plots_shp = gpd.read_file(shp_file)
+            st.write(plots_shp.head(1))
+        except Exception as e:
+            st.error(f"Error reading shapefile: {e}")
+    else:
+        st.error("No shapefile (.shp) found in uploaded zip file.")
+else:
+    st.error("You need to upload a shapefile zip file.")
+    
 
 # Read column names from the GeoDataFrame
 if 'plots_shp' in locals():
@@ -1146,6 +1178,7 @@ if image_type == 'RGB':
     if ortho_path:
         # Remove double quotes from the input path if they exist
         ortho_path = ortho_path.strip('"')
+        st.write(ortho_path)
     
         if not os.path.exists(ortho_path):
             st.error("Invalid file path. Please provide a valid file path.")
@@ -1165,7 +1198,33 @@ if image_type == 'RGB':
     else:
         st.error("You need to provide a file path.")
 
-     
+
+    ortho_files = st.file_uploader("Upload Orthomosaics or reflectance images (.tif only)", type="tif", accept_multiple_files=True)
+    
+    if ortho_files:
+        img_dir = temp_dir.name
+        st.write(img_dir)
+        img_list_names_path = []
+        img_list_names = []
+        for ortho_file in ortho_files:
+            dest_file_path = os.path.join(img_dir, ortho_file.name)
+            with open(dest_file_path, "wb") as dest_file:
+                dest_file.write(ortho_file.getvalue())
+            img_list_names_path.append(dest_file_path)
+            img_list_names.append(ortho_file.name)
+            st.success(f"{ortho_file.name} uploaded!")
+    
+        try:
+            img_list_names_path = sorted(img_list_names_path)
+            st.write(img_list_names)
+            print(img_list_names_path)
+        except Exception as e:
+            st.error(f"Error reading Orthomosaic image data: {e}")
+    else:
+        st.error("You need to provide a file path.")
+
+
+    
     vi_msk_soil = st.selectbox("Select VI to mask the soil", list(vi_functions_soil.keys()), index=0)
     
 
@@ -1204,6 +1263,8 @@ if image_type == 'RGB':
     def process_tiff_file(tiffile, shp_file, plot_num_field_name, img_dir):
                    
         try:
+            print(shp_file)
+            #st.write(shp_file)
             total_steps = len(fiona.open(shp_file, "r"))
             progress_bar = st.progress(0)
             
@@ -1305,32 +1366,42 @@ if image_type == 'RGB':
     # Create a form to collect the CSV file name and the local machine path
     st.markdown("**Save CSV Dataframe**")  
     csv_file_name = st.text_input("Enter the CSV file name:")
-    local_path = st.text_input("Enter the local machine path to save the file:")        
+    local_path = st.text_input("Enter the local machine path to save the file:")    
+
             
     # Check if all required parameters are provided
-    if shp_path and plot_num_field_name and ortho_path:
+    if shp_path or shp_zip_path and plot_num_field_name and ortho_path or ortho_files:
         # Display the 'Run VIs' button if all parameters are provided
         if st.button('Run VIs'):
             for tiffile in img_list_names:
-                try:
-                    print(tiffile)
-                    st.write(tiffile)
-    
-                    process_tiff_file(tiffile, shp_path, plot_num_field_name, ortho_path)
+                try:                   
+                                                          
+                    if shp_path.strip() != '' and ortho_path.strip() != '':
+                        #st.success(f"{tiffile} uploaded by user!")
+                        process_tiff_file(tiffile, shp_path, plot_num_field_name, ortho_path)
+                    elif shp_file is not None and img_dir is not None:
+                        #st.success(f"{tiffile} uploaded online!")
+                        process_tiff_file(tiffile, shp_file, plot_num_field_name, img_dir)
+
                 except Exception as e:
                     st.write("An error occurred while processing the file:", tiffile)
                     st.write("Error:", e)
                     continue
-            my_array = np.array(array)
-            dataframe = pd.DataFrame(my_array, columns=colname)
-            st.success("All TIFF files processed successfully.")
-            st.write(dataframe)
-    
-            if dataframe is None or colname is None:
-                st.error("dataframe or colname is empty or None")
+           
+            if len(array) > 0:
+                my_array = np.array(array)
+                dataframe = pd.DataFrame(my_array, columns=colname)
+                st.success("All TIFF files processed successfully.")
+                st.write(dataframe)
+                
+                if dataframe is None or colname is None:
+                    st.error("dataframe or colname is empty or None")
+                else:
+                    dataframe.to_csv(local_path + '/' + csv_file_name + '.csv', index=False)
+                    st.success("File saved successfully!")
             else:
-                dataframe.to_csv(local_path + '/' + csv_file_name + '.csv', index=False)
-                st.success("File saved successfully!")
+                st.error("No data to process. Please check if the provided files are correct.")
+
     else:
         st.warning("Please provide all required parameters (Orthomosaic and shapefile path, and field name) to enable the 'Run VIs' button.")
 
@@ -1708,7 +1779,10 @@ else:
     if st.button('Run VIs'):
         try:
             
-            process_reflectance_file(shp_path, plot_num_field_name, ms_path)
+            if shp_path is not None:
+                process_reflectance_file(shp_path, plot_num_field_name, ms_path)
+            else:
+                process_reflectance_file(shp_zip_path, plot_num_field_name, ms_path)
             
         except Exception as e:
             st.write("Error:", e)

@@ -1,3 +1,5 @@
+[![DOI](https://zenodo.org/badge/620394919.svg)](https://zenodo.org/badge/latestdoi/620394919)
+
 # *Python script to perform Vegetation indices (VIs) for phenotyping*
 
 ## Online access:

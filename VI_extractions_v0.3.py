@@ -9,7 +9,7 @@ import subprocess
 st.set_page_config(page_title="Vegetation Index Calculator", page_icon=":seedling:", layout="wide")
 
 st.title("Vegetation indices (VIs) for digital phenotyping")
-st.subheader("RGB images only - This algorithm consists in calculating vegetation indices looping through images files and plot numbers.")
+st.subheader("This algorithm consists in calculating vegetation indices looping through images files and plot numbers.")
 
 libraries = ["numpy", "numpy.ma", "geopandas", "pandas", "os", "fiona", "rasterio.mask", "warnings", "rasterio.features", "streamlit", "psutil"] 
 

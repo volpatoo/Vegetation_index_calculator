@@ -295,6 +295,20 @@ ________________________________________________________________________________
 [RGB sample dataset and shapefile](https://github.com/msudrybeanbreeding/Suppl_files/tree/main/test_rgb) can be download here.
 [MS sample dataset and shapefile] (https://github.com/msudrybeanbreeding/Suppl_files/tree/main/test_ms) also is available here.
 
+<div id="P11" />
+
+---------------------------------------------
+## Shapefile input
+
+<p align="center">
+  <img src="https://github.com/msudrybeanbreeding/images/blob/main/VI_calculator/App_4.png" width="70%" height="70%">
+</p>
+
+> Once the shapefile is uploaded, the user will be able to visualize the first line of the shapefile features.
+> Then, the user needs to select the "select field name" to identify the plot ID which will be used in the loop and in the final data table results. 
+
+- Only shp. files format are accepted;
+- Zip folder should be used when online running.
 
 
 ## Runing the loop

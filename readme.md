@@ -329,8 +329,10 @@ ________________________________________________________________________________
 > The plot ID name selected also will be displayed in the app:
 
 <p align="left">
-  <img src="https://github.com/msudrybeanbreeding/images/blob/main/VI_calculator/App_6.png" width="30%" height="30%">
+  <img src="https://github.com/msudrybeanbreeding/images/blob/main/VI_calculator/App_6.png" width="20%" height="20%">
 </p>
+
+
 
 ## Runing the loop
 > **j**  img numbers </p>

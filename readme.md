@@ -2,40 +2,94 @@
 
 # *Python script to perform Vegetation indices (VIs) for phenotyping*
 
-## Online access:
+<p align="center">
+  <img src="https://github.com/msudrybeanbreeding/images/blob/main/VI_calculator/Initial_screen.png" width="70%" height="70%">
+</p>
+
+<div id="menu" />
+
+---------------------------------------------
+## Resources
+  
+   
+   * [Online access](#P1)
+   * [Disclosure](#P2)
+   * [Credits](#P3)
+   * [Disclaimer](#P4)
+   * [Class Summary](#P5)
+   * [Requirements](#P6)
+   * [Installation](#Instal)
+   * [Running the App](#P7)
+   * [Functionalities](#P8)
+   * [Pipeline](#P9)
+
+   * [Contact](#P21)
+
+<div id="P1" />
+
+---------------------------------------------
+### Online access
 >[**Vegetation_index_calculator**](https://msudrybeanbreeding-vegetation-index--vi-extractions-v0-3-9knpzt.streamlit.app/)
 - Deployed with Streamlit app
-## Disclosure
+
+<div id="P2" />
+
+> To run the app in a local machine, check the box. Otherwise, to use online drag or browser the data. 
+
+<p align="center">
+  <img src="https://github.com/msudrybeanbreeding/images/blob/main/VI_calculator/App_1.png" width="70%" height="70%">
+</p>
+
+> Due to software limitations, the max file size is 200 MB. To files larger than 200 MB download and deploy the app in a local machine.
+---------------------------------------------
+### Disclosure
 > Developed and maintained by [Dr. Leonardo Volpato](https://github.com/volpatoo)
-## Credits
+
+<div id="P3" />
+
+---------------------------------------------
+### Credits
 Leonardo Volpato (volpato1@msu.edu) and Francisco Gomez (gomezfr1@msu.edu) - Michigan State University (MSU)
 
-## Disclaimer
+<div id="P4" />
+
+---------------------------------------------
+
+### Disclaimer
 
 We welcome feedback and suggestions about the usefulness of the application and make no guarantee of the correctness, reliability, or utility of the results if incorrect selections are made during the steps of VIs estimation. Vegetation_index_calculator is freely accessible, and the source code will be hosted soon at [MSU Dry Bean Breeding Program GitHub page](https://github.com/msudrybeanbreeding?tab=repositories).
 
+<div id="P5" />
 
-## Class Summary
+---------------------------------------------
+### Class Summary
 > This algorithm consists in calculating vegetation indices looping through images files and plot numbers. These
 indices can be used for precision agriculture for example (or remote sensing). There are functions to define the data and to calculate the
 implemented indices.
 
-## [Vegetation index](https://en.wikipedia.org/wiki/Vegetation_Index)
+#### [Vegetation index](https://en.wikipedia.org/wiki/Vegetation_Index)
 
 A Vegetation Index (VI) is a spectral transformation of two or more bands
 designed to enhance the contribution of vegetation properties and allow
 reliable spatial and temporal inter-comparisons of terrestrial
 photosynthetic activity and canopy structural variations
 
+<div id="P6" />
 
-## Requirements
+---------------------------------------------
+### Requirements
 
 Make sure you have the following installed on your system:
 
 - Python 3.7 or higher (https://www.python.org/downloads/)
 - Streamlit (https://docs.streamlit.io/en/stable/installation.html)
 
-## Installation
+
+<div id="Instal" />
+
+---------------------------------------------
+
+### Installation
 
 1. Clone this repository or download the code as a ZIP file:
 
@@ -55,7 +109,11 @@ pip install -r requirements.txt
 
 It is recommended to use a virtual environment to avoid dependency conflicts with other Python projects.
 
-## Running the App
+<div id="P7" />
+
+---------------------------------------------
+
+### Running the App
 
 To run the app, use the following command:
 
@@ -64,7 +122,7 @@ streamlit run VI_extractions_v0.3.py.py
 The app will start, and you should see a message with the URL where you can access it, usually `http://localhost:8501`. Open the URL in your web browser to use the app.
 
 
-# Information about channels (Wavelength range for each)
+#### Information about channels (Wavelength range for each)
 
 * [nir - near-infrared](https://www.malvernpanalytical.com/br/products/technology/near-infrared-spectroscopy)
     Wavelength Range 700 nm to 2500 nm
@@ -81,7 +139,7 @@ The app will start, and you should see a message with the URL where you can acce
 * [green](https://en.wikipedia.org/wiki/Color)
     Wavelength Range 520 nm to 560 nm
     
-# Implemented index list 
+#### Implemented index list 
 > 73 in total from RGB and Multispectral (MS) sensors </p>
 
 `abbreviationOfIndexName` -- list of channels used
@@ -160,125 +218,70 @@ The app will start, and you should see a message with the URL where you can acce
             #"MSRGR"            --  red, green
             #"TNDGR"            --  red, green, blue
 
-## List of all index implemented 
-        ARVI2","ATSAVI","BCC","BdivG","BI","BIM","BNDVI","BWDRVI",
-        "CCCI","CI","CIgreen","CIrededge","CIVE","COM1","COM2","CTVI","CVI","DVI",
-        "EVI","ExG","ExG2","ExGR","EXR","GBNDVI","GCC","GdivB","GdivR","GDVI","GEMI",
-        "GLI","GmnB","GmnR","GNDVI","GOSAVI","GRNDVI","GSAVI","HI","HUE","I","IF","IPVI",
-        "MExG","MGVRI","MRCCbyAlper","MRVI","MSAVI","MSRGR","MyIndexi","NDI","NDRBI",
-        "NDRE","NDVI","NGBDI","NGRDI","NormG","NormNIR","NormR","PNDVI","RBNDVI","RCC","RdiB",
-        "redEdgeNDVI","RGBVI","RI","RmnB","RVI","SI","TGI","TNDGR","TVI","VARI","VEG" , "PSRI"
-
-## List of index for multispectral (MS) camera - 4 or 5 channels
+#### List of index for multispectral (MS) camera - 4 or 5 channels
  "ARVI2", "CCCI", "CVI", "NDVI", "redEdgeNDVI", "GNDVI",
  "GRNDVI", "ATSAVI", "CIgreen", "CIrededge", "CTVI", "GDVI",
  "GEMI", "GOSAVI", "GSAVI", "IPVI", "RVI", "MRVI",
  "MSAVI", "NormG", "NormNIR", "NormR", "NGRDI", "RI", "DVI",
  "TVI", "NDRE", "PSRI
  
-## List of index just with RGB channels
+#### List of index just with RGB channels
  "GLI", "CI", "HUE", "I", "NGRDI", "RI", "IF", 'BI','BIM',
  'HI','NGRDI','SI','VARI','BdivG','BCC','CIVE','COM1','COM2',
  'ExG','ExG2','ExGR','EXR','GmnB','GmnR','GdivB','GdivR',
  'GCC','MExG','MGVRI','NDI','NDRBI','NGBDI','RmnB',
  'RdiB','RCC','MRCCbyAlper','RGBVI','TGI','VEG','MyIndexi','MSRGR','TNDGR'
 
-# References
+#### References
 * Vegetation indices contributions from: 
 [João Gustavo A. Amorim](https://github.com/TheAlgorithms/Python/blob/master/digital_image_processing/index_calculation.py)
 
 ____________________________________________________________________________________
 ____________________________________________________________________________________
 
-# Import the packages to the python environment
+<div id="P8" />
 
-## Check RAM available
- 
+## Functionalities
 
-## Function implemented to perform the index
+### Left slides side:
 
+> Before to start the running the app, the user can:
+- Install or upgrade the python libraries used to perform the analysis;
+- Check if the ligraries were imported correctly;
+- Check the RAM available
 
+<p align="left">
+  <img src="https://github.com/msudrybeanbreeding/images/blob/main/VI_calculator/App_2.png" width="20%" height="20%">
+</p>
 
-# **RGB bands**
+> For all cases, a message will be displyed to inform the status to the user.
 
-# Alternative #1:
+*PS: Online use, the user do not need to click on the check commands. It will be automatecly loaded by the app.*
 
-## Setting the folders directories
+<div id="P9" />
 
-### Plots shapefiles
+---------------------------------------------
+## Pipeline
+> The app display a list with the main step to run the VIs.
 
+1 - Select the data source input
 
-### Open attribute table of data
+2 - Input the Shapefile
 
+3 - Select PlotID from the shp attributes
 
-    
+4 - Select image type - RGB or MS
 
-### Open with `fiona` to better explore the plots features
+5 - Image diretory Input
 
- 
+6 - Select VI to mask the soil
 
-### Image diretory (.tif aka orthomosaic)  
+7 - Select threshold to mask the soil
 
+8 - Run the analysis
 
-#### Getting the images from the directory according to the image format 
+9 - Save CSV Dataframe output
 
-
-
-### Creating a list with the image names to save in the final table
-
-
-
-# Checking the file size
-
-
-## Runing the loop
-
-
-
-## Saving the results in a csv file
-
-
-# Alternative #2:
-
-# Import the packages to the python environment
-
-
-## Setting the folders directories
-
-### Plots shapefiles
-`
-
-### Open attribute table of data
-
-`
-    
-
-### Open with `fiona` to better explore the plots features
-
-
- 
-
-### Image diretory (.tif aka orthomosaic)  
-
-
-
-#### Getting the images from the directory according to the image format 
-
-
-    
-
-### Creating a list with the image names to save in the final table
-
-
-
-## Checking the file size
-
-
-
-## Creating a array to saving the results
-
-
-## Creating a name list to save the outputs
 
 ## Runing the loop
 > **j**  img numbers </p>
@@ -287,32 +290,9 @@ ________________________________________________________________________________
 * From the `numpy` library
 > **f**  function of pixel extraction: 'mean' 'media' 'count' 'std
 
-
-
-## Saving the output into a csv table
-
-
-# **Multispectral bands**
-
-
-## Plots shapefiles
-
-## Plot ID
-
-## Array to store the outputs
-
-## Multispectral indices
-> 28 VIs in total from MS camera + 5 reflectance (bands)
- 
 
 ## Setting the image parameter to start the loop
 
-## Runing the loop
-> **j**  img numbers </p>
-> **p**  plots</p>
-> **i**  VIs</p>
-* From the `numpy` library
-> **f**  function of pixel extraction: 'mean' 'media' 'count' 'std
 
 
 # Saving the output into a csv table

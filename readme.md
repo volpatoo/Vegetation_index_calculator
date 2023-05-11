@@ -262,7 +262,8 @@ ________________________________________________________________________________
 
 ---------------------------------------------
 ## Pipeline
-> The app display a list with the main step to run the VIs.
+
+> An overview of the main steps to run the VIs appears in the app. 
 
 1 - Select the data source input
 

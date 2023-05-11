@@ -23,6 +23,7 @@
    * [Functionalities](#P8)
    * [Pipeline](#P9)
    * [Dataset](#P10)
+   * [Shapefile](#P11)
 
    * [Contact](#P21)
 
@@ -54,6 +55,7 @@
 ### Credits
 Leonardo Volpato (volpato1@msu.edu) and Francisco Gomez (gomezfr1@msu.edu) - Michigan State University (MSU)
 
+[Menu](#menu)
 <div id="P4" />
 
 ---------------------------------------------
@@ -62,6 +64,7 @@ Leonardo Volpato (volpato1@msu.edu) and Francisco Gomez (gomezfr1@msu.edu) - Mic
 
 We welcome feedback and suggestions about the usefulness of the application and make no guarantee of the correctness, reliability, or utility of the results if incorrect selections are made during the steps of VIs estimation. Vegetation_index_calculator is freely accessible, and the source code will be hosted soon at [MSU Dry Bean Breeding Program GitHub page](https://github.com/msudrybeanbreeding?tab=repositories).
 
+[Menu](#menu)
 <div id="P5" />
 
 ---------------------------------------------
@@ -77,6 +80,7 @@ designed to enhance the contribution of vegetation properties and allow
 reliable spatial and temporal inter-comparisons of terrestrial
 photosynthetic activity and canopy structural variations
 
+[Menu](#menu)
 <div id="P6" />
 
 ---------------------------------------------
@@ -87,7 +91,7 @@ Make sure you have the following installed on your system:
 - Python 3.7 or higher (https://www.python.org/downloads/)
 - Streamlit (https://docs.streamlit.io/en/stable/installation.html)
 
-
+[Menu](#menu)
 <div id="Instal" />
 
 ---------------------------------------------
@@ -112,6 +116,7 @@ pip install -r requirements.txt
 
 It is recommended to use a virtual environment to avoid dependency conflicts with other Python projects.
 
+[Menu](#menu)
 <div id="P7" />
 
 ---------------------------------------------
@@ -242,6 +247,7 @@ The app will start, and you should see a message with the URL where you can acce
 ____________________________________________________________________________________
 ____________________________________________________________________________________
 
+[Menu](#menu)
 <div id="P8" />
 
 ## Functionalities
@@ -261,6 +267,7 @@ ________________________________________________________________________________
 
 *PS: Online use, the user do not need to click on the check commands. It will be automatecly loaded by the app.*
 
+[Menu](#menu)
 <div id="P9" />
 
 ---------------------------------------------
@@ -286,15 +293,18 @@ ________________________________________________________________________________
 
 9 - Save CSV Dataframe output
 
+[Menu](#menu)
 <div id="P10" />
 
 ---------------------------------------------
 
 ## Sample dataset
 
-[RGB sample dataset and shapefile](https://github.com/msudrybeanbreeding/Suppl_files/tree/main/test_rgb) can be download here.
-[MS sample dataset and shapefile] (https://github.com/msudrybeanbreeding/Suppl_files/tree/main/test_ms) also is available here.
+- [RGB sample dataset and shapefile](https://github.com/msudrybeanbreeding/Suppl_files/tree/main/test_rgb) can be download here.
 
+- [MS sample dataset and shapefile](https://github.com/msudrybeanbreeding/Suppl_files/tree/main/test_ms) also is available here.
+
+[Menu](#menu)
 <div id="P11" />
 
 ---------------------------------------------
@@ -310,6 +320,17 @@ ________________________________________________________________________________
 - Only shp. files format are accepted;
 - Zip folder should be used when online running.
 
+> A message will display to the user if the shapefile was uploaded correctly:
+
+<p align="left">
+  <img src="https://github.com/msudrybeanbreeding/images/blob/main/VI_calculator/App_5.png" width="30%" height="30%">
+</p>
+
+> The plot ID name selected also will be displayed in the app:
+
+<p align="left">
+  <img src="https://github.com/msudrybeanbreeding/images/blob/main/VI_calculator/App_6.png" width="30%" height="30%">
+</p>
 
 ## Runing the loop
 > **j**  img numbers </p>

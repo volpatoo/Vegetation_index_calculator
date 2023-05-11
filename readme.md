@@ -3,7 +3,7 @@
 # *Python script to perform Vegetation indices (VIs) for phenotyping*
 
 <p align="center">
-  <img src="https://github.com/msudrybeanbreeding/images/blob/main/VI_calculator/Initial_screen.png" width="70%" height="70%">
+  <img src="https://raw.githubusercontent.com/msudrybeanbreeding/images/main/VI_calculator/Initial_screen.png" width="70%" height="70%">
 </p>
 
 <div id="menu" />
@@ -40,7 +40,7 @@
 > To run the app in a local machine, check the box. Otherwise, to use online drag or browser the data. 
 
 <p align="center">
-  <img src="https://github.com/msudrybeanbreeding/images/blob/main/VI_calculator/App_1.png" width="70%" height="70%">
+  <img src="https://raw.githubusercontent.com/msudrybeanbreeding/images/main/VI_calculator/App_1.png" width="70%" height="70%">
 </p>
 
 > Due to software limitations, the max file size is 200 MB. To files larger than 200 MB download and deploy the app in a local machine.
@@ -260,7 +260,7 @@ ________________________________________________________________________________
 - Check the RAM available
 
 <p align="left">
-  <img src="https://github.com/msudrybeanbreeding/images/blob/main/VI_calculator/App_2.png" width="20%" height="20%">
+  <img src="https://raw.githubusercontent.com/msudrybeanbreeding/images/main/VI_calculator/App_2.png" width="20%" height="20%">
 </p>
 
 > For all cases, a message will be displyed to inform the status to the user.
@@ -311,7 +311,7 @@ ________________________________________________________________________________
 ## Shapefile input
 
 <p align="center">
-  <img src="https://github.com/msudrybeanbreeding/images/blob/main/VI_calculator/App_4.png" width="70%" height="70%">
+  <img src="https://raw.githubusercontent.com/msudrybeanbreeding/images/main/VI_calculator/App_4.png" width="70%" height="70%">
 </p>
 
 > Once the shapefile is uploaded, the user will be able to visualize the first line of the shapefile features.
@@ -323,13 +323,13 @@ ________________________________________________________________________________
 > A message will display to the user if the shapefile was uploaded correctly:
 
 <p align="left">
-  <img src="https://github.com/msudrybeanbreeding/images/blob/main/VI_calculator/App_5.png" width="30%" height="30%">
+  <img src="https://raw.githubusercontent.com/msudrybeanbreeding/images/main/VI_calculator/App_5.png" width="30%" height="30%">
 </p>
 
 > The plot ID name selected also will be displayed in the app:
 
 <p align="left">
-  <img src="https://github.com/msudrybeanbreeding/images/blob/main/VI_calculator/App_6.png" width="20%" height="20%">
+  <img src="https://raw.githubusercontent.com/msudrybeanbreeding/images/main/VI_calculator/App_6.png" width="20%" height="20%">
 </p>
 
 

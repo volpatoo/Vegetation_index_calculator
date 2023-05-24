@@ -34,9 +34,9 @@
 >[**Vegetation_index_calculator**](https://msudrybeanbreeding-vegetation-index--vi-extractions-v0-3-9knpzt.streamlit.app/)
 - Deployed with Streamlit app
 
-[Menu](#menu)
+
 <div id="P2" />
----------------------------------------------
+
 > To run the app in a local machine, check the box. Otherwise, to use online drag or browser the data. 
 
 <p align="center">
@@ -48,14 +48,14 @@
 ### Disclosure
 > Developed and maintained by [Dr. Leonardo Volpato](https://github.com/volpatoo)
 
-[Menu](#menu)
+
 <div id="P3" />
 
 ---------------------------------------------
 ### Credits
 Leonardo Volpato (volpato1@msu.edu) and Francisco Gomez (gomezfr1@msu.edu) - Michigan State University (MSU)
 
-[Menu](#menu)
+
 <div id="P4" />
 
 ---------------------------------------------
@@ -64,7 +64,7 @@ Leonardo Volpato (volpato1@msu.edu) and Francisco Gomez (gomezfr1@msu.edu) - Mic
 
 We welcome feedback and suggestions about the usefulness of the application and make no guarantee of the correctness, reliability, or utility of the results if incorrect selections are made during the steps of VIs estimation. Vegetation_index_calculator is freely accessible, and the source code will be hosted soon at [MSU Dry Bean Breeding Program GitHub page](https://github.com/msudrybeanbreeding?tab=repositories).
 
-[Menu](#menu)
+
 <div id="P5" />
 
 ---------------------------------------------
@@ -80,7 +80,6 @@ designed to enhance the contribution of vegetation properties and allow
 reliable spatial and temporal inter-comparisons of terrestrial
 photosynthetic activity and canopy structural variations
 
-[Menu](#menu)
 <div id="P6" />
 
 ---------------------------------------------
@@ -91,7 +90,7 @@ Make sure you have the following installed on your system:
 - Python 3.7 or higher (https://www.python.org/downloads/)
 - Streamlit (https://docs.streamlit.io/en/stable/installation.html)
 
-[Menu](#menu)
+
 <div id="Instal" />
 
 ---------------------------------------------
@@ -244,7 +243,6 @@ The app will start, and you should see a message with the URL where you can acce
 * Vegetation indices contributions from: 
 [João Gustavo A. Amorim](https://github.com/TheAlgorithms/Python/blob/master/digital_image_processing/index_calculation.py)
 
-____________________________________________________________________________________
 ____________________________________________________________________________________
 
 [Menu](#menu)

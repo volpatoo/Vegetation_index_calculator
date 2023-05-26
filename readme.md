@@ -362,9 +362,12 @@ Troubleshooting can include:
 
 ### Runing the loop
 The batch process passing through:
-> **j**:  img numbers 
+> **j**:  img numbers
+ 
 > **p**:  plots
+
 > **i**:  VIs
+
 > **f**:  function of pixel extraction: 'mean', 'media', 'count', and 'std
 
 ###  Saving the output into a csv table

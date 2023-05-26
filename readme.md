@@ -25,7 +25,11 @@
    * [Pipeline](#P9)
    * [Dataset](#P10)
    * [Shapefile](#P11)
-   * [Contact](#P21)
+   * [Select image features](#P12)
+   * [Input image data](#P13)
+   * [Masking soil](#P14)
+   * [VIs list available](#P15)
+   * [Running VIs analysis](#P16)
 
 <div id="P1" />
 
@@ -247,7 +251,7 @@ ________________________________________________________________________________
 </p>
 
 [Menu](#menu)
-<div id="P11" />
+<div id="P12" />
 
 ---------------------------------------------
 ## Select the image features
@@ -267,7 +271,7 @@ ________________________________________________________________________________
 </p>
 
 [Menu](#menu)
-<div id="P11" />
+<div id="P13" />
 
 ---------------------------------------------
 ## Orthomosaic or Reflectance map inputs
@@ -296,7 +300,7 @@ ________________________________________________________________________________
 </p>
 
 [Menu](#menu)
-<div id="P11" />
+<div id="P14" />
 
 ---------------------------------------------
 ## Masking the ground
@@ -308,7 +312,7 @@ The user can select a particular VI in a list and its respective threshold
 </p>
 
 [Menu](#menu)
-<div id="P11" />
+<div id="P15" />
 
 ---------------------------------------------
 ## Vegetation index to run
@@ -329,7 +333,7 @@ Or select a specific VI to run the analysis:
 </p>
 
 [Menu](#menu)
-<div id="P11" />
+<div id="P16" />
 
 ---------------------------------------------
 ## Running the VIs analysis  

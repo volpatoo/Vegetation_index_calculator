@@ -1,3 +1,4 @@
+
 [![DOI](https://zenodo.org/badge/620394919.svg)](https://zenodo.org/badge/latestdoi/620394919)
 
 # *Python script to perform Vegetation indices (VIs) for phenotyping*
@@ -24,7 +25,6 @@
    * [Pipeline](#P9)
    * [Dataset](#P10)
    * [Shapefile](#P11)
-
    * [Contact](#P21)
 
 <div id="P1" />
@@ -149,82 +149,6 @@ The app will start, and you should see a message with the URL where you can acce
 #### Implemented index list 
 > 73 in total from RGB and Multispectral (MS) sensors </p>
 
-`abbreviationOfIndexName` -- list of channels used
-
-            #"ARVI2"            --  red, nir
-            #"CCCI"             --  red, redEdge, nir
-            #"CVI"              --  red, green, nir
-            #"GLI"              --  red, green, blue
-            #"NDVI"             --  red, nir
-            #"BNDVI"            --  blue, nir
-            #"redEdgeNDVI"      --  red, redEdge
-            #"GNDVI"            --  green, nir
-            #"GBNDVI"           --  green, blue, nir
-            #"GRNDVI"           --  red, green, nir
-            #"RBNDVI"           --  red, blue, nir
-            #"PNDVI"            --  red, green, blue, nir
-            #"ATSAVI"           --  red, nir
-            #"BWDRVI"           --  blue, nir
-            #"CIgreen"          --  green, nir
-            #"CIrededge"        --  redEdge, nir
-            #"CI"               --  red, blue
-            #"CTVI"             --  red, nir
-            #"GDVI"             --  green, nir
-            #"EVI"              --  red, blue, nir
-            #"GEMI"             --  red, nir
-            #"GOSAVI"           --  green, nir
-            #"GSAVI"            --  green, nir
-            #"HUE"              --  red, green, blue
-            #"IPVI"             --  red, nir
-            #"I"                --  red, green, blue
-            #"RVI"              --  red, nir
-            #"MRVI"             --  red, nir
-            #"MSAVI"            --  red, nir
-            #"NormG"            --  red, green, nir
-            #"NormNIR"          --  red, green, nir
-            #"NormR"            --  red, green, nir
-            #"NGRDI"            --  red, green
-            #"RI"               --  red, green
-            #"IF"               --  red, green, blue
-            #"DVI"              --  red, nir
-            #"TVI"              --  red, nir
-            #"NDRE"             --  redEdge, nir
-            #"PSRI"             --  red, green, redEdge
-            #"BI"               --  red, green, blue
-            #"BIM"              --  red, green, blue
-            #"HI"               --  red, green, blue
-            #"SI"               --  red, blue
-            #"VARI"             --  red, green, blue
-            #"BdivG"            --  green, blue
-            #"BCC"              --  red, green, blue
-            #"CIVE"             --  red, green, blue
-            #"COM1"             --  red, green, blue
-            #"COM2"             --  red, green, blue
-            #"ExG"              --  red, green, blue
-            #"ExG2"             --  red, green, blue
-            #"ExGR"             --  red, green, blue
-            #"EXR"              --  red, green
-            #"GmnB"             --  green, blue
-            #"GmnR"             --  red, green
-            #"GdivB"            --  green, blue
-            #"GdivR"            --  red, green
-            #"GCC"              --  red, green, blue
-            #"MExG"             --  red, green, blue
-            #"MGVRI"            --  red, green, blue
-            #"NDI"              --  red, green
-            #"NDRBI"            --  red, blue
-            #"NGBDI"            --  green, blue
-            #"RmnB"             --  red, blue
-            #"RdiB"             --  red, blue
-            #"RCC"              --  red, green, blue
-            #"MRCCbyAlper"      --  red, green, blue
-            #"RGBVI"            --  red, green, blue
-            #"TGI"              --  red, green, blue
-            #"VEG"              --  red, green, blue
-            #"MyIndexi"         --  red, green, blue
-            #"MSRGR"            --  red, green
-            #"TNDGR"            --  red, green, blue
-
 #### List of index for multispectral (MS) camera - 4 or 5 channels
  "ARVI2", "CCCI", "CVI", "NDVI", "redEdgeNDVI", "GNDVI",
  "GRNDVI", "ATSAVI", "CIgreen", "CIrededge", "CTVI", "GDVI",
@@ -274,21 +198,13 @@ ________________________________________________________________________________
 > An overview of the main steps to run the VIs appears in the app. 
 
 1 - Select the data source input
-
 2 - Input the Shapefile
-
 3 - Select PlotID from the shp attributes
-
 4 - Select image type - RGB or MS
-
 5 - Image diretory Input
-
 6 - Select VI to mask the soil
-
 7 - Select threshold to mask the soil
-
 8 - Run the analysis
-
 9 - Save CSV Dataframe output
 
 [Menu](#menu)
@@ -330,21 +246,131 @@ ________________________________________________________________________________
   <img src="https://raw.githubusercontent.com/msudrybeanbreeding/images/main/VI_calculator/App_6.png" width="20%" height="20%">
 </p>
 
+[Menu](#menu)
+<div id="P11" />
 
+---------------------------------------------
+## Select the image features
 
-## Runing the loop
-> **j**  img numbers </p>
-> **p**  plots</p>
-> **i**  VIs</p>
-* From the `numpy` library
-> **f**  function of pixel extraction: 'mean' 'media' 'count' 'std
+> The user has the option to choose between **RGB** and **MS** image data.
 
+ - [x] RGB
 
-## Setting the image parameter to start the loop
+<p align="left">
+  <img src="https://raw.githubusercontent.com/msudrybeanbreeding/images/main/VI_calculator/App_10.png" width="40%" height="40%">
+</p>
 
+ - [x] Multispectral - MS
 
+<p align="left">
+  <img src="https://raw.githubusercontent.com/msudrybeanbreeding/images/main/VI_calculator/App_7.png" width="30%" height="40%">
+</p>
 
-# Saving the output into a csv table
+[Menu](#menu)
+<div id="P11" />
+
+---------------------------------------------
+## Orthomosaic or Reflectance map inputs
+
+ - The user can only input files in the .TIF format.
+ - In order to comply with software limitations, 200MB per file is limited when used online.
+ - File size is not limited to local machine use. 
+
+> A list of file names will appear once upload has been successfully completed.
+
+**RGB data**
+<p align="left">
+  <img src="https://raw.githubusercontent.com/msudrybeanbreeding/images/main/VI_calculator/App_11.png" width="52%" height="52%">
+</p>
+
+**MS data**
+<p align="left">
+  <img src="https://raw.githubusercontent.com/msudrybeanbreeding/images/main/VI_calculator/App_12.png" width="40%" height="40%">
+</p>
+
+- The user will need to provide the correct number of reflectance bands used to perform the analysis. 
+
+> For local machine use, the user must provide the path containing either the Orthomosaic (RGB data) or Reflectance maps (MS data). Otherwise, an error message will appear.
+<p align="left">
+  <img src="https://raw.githubusercontent.com/msudrybeanbreeding/images/main/VI_calculator/App_13.png" width="35%" height="30%">
+</p>
+
+[Menu](#menu)
+<div id="P11" />
+
+---------------------------------------------
+## Masking the ground
+The soil can be removed by creating a VI index mask. 
+The user can select a particular VI in a list and its respective threshold
+
+<p align="left">
+  <img src="https://raw.githubusercontent.com/msudrybeanbreeding/images/main/VI_calculator/App_14.png" width="35%" height="35%">
+</p>
+
+[Menu](#menu)
+<div id="P11" />
+
+---------------------------------------------
+## Vegetation index to run
+The list to RGB or MS data (depending on the user data selection) will be displayed.
+
+The user can choose to run using the complete list:
+<p align="left">
+  <img src="https://raw.githubusercontent.com/msudrybeanbreeding/images/main/VI_calculator/App_15.png" width="90%" height="80%">
+</p>
+
+<p align="left">
+  <img src="https://raw.githubusercontent.com/msudrybeanbreeding/images/main/VI_calculator/App_17.png" width="90%" height="80%">
+</p>
+
+Or select a specific VI to run the analysis:
+<p align="left">
+  <img src="https://raw.githubusercontent.com/msudrybeanbreeding/images/main/VI_calculator/App_14.png" width="35%" height="50%">
+</p>
+
+[Menu](#menu)
+<div id="P11" />
+
+---------------------------------------------
+## Running the VIs analysis  
+
+>Once all input and settings have been completed by the user, the button "Run Vis" will be enabled. Otherwise, an error message will be displayed:
+ 
+<p align="left">
+  <img src="https://raw.githubusercontent.com/msudrybeanbreeding/images/main/VI_calculator/App_18.png" width="35%" height="35%">
+</p>
+
+Troubleshooting can include:
+- Upload correct image format (.TIF);
+- Select the correspondent data to run according to the image data
+	- RGB ***image type*** has to be selected when inputting an orthomosaic; or
+	- MS ***image type*** when input reflectance maps.
+	- Remove the spaces (if any) from the image file names.
+	- Shapefile format (.shp).
+	- Shapefile metric units (Shapefile has to need the CRS from image data).
+
+### Run botton
+> Once the Run VIs button is displayed, the use will be able to see the file name to be saved:
+> 
+<p align="left">
+  <img src="https://raw.githubusercontent.com/msudrybeanbreeding/images/main/VI_calculator/App_19.png" width="35%" height="35%">
+</p>
+
+### Runing the loop
+The batch process passing through:
+> **j**:  img numbers 
+> **p**:  plots
+> **i**:  VIs
+> **f**:  function of pixel extraction: 'mean', 'media', 'count', and 'std
+
+###  Saving the output into a csv table
+
+Once the loop completion, a success message will be displayed as well as a table containing the results for each image data, plot ID (row) and VIs, and method extraction (column). 
+- Finally, the user can download the output by clicking on the "*Download CSV file*" button. 
+
+<p align="left">
+  <img src="https://raw.githubusercontent.com/msudrybeanbreeding/images/main/VI_calculator/App_20.png" width="100%" height="50%">
+</p>
 
 
 

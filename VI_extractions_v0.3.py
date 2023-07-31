@@ -83,6 +83,7 @@ with st.expander("**Implemented index list - 73 in total**"):
     ["CCCI", "red, redEdge, nir"],
     ["CVI", "red, green, nir"],
     ["GLI", "red, green, blue"],
+    ["NGE", "red, green, blue"],
     ["NDVI", "red, nir"],
     ["BNDVI", "blue, nir"],
     ["redEdgeNDVI", "red, redEdge"],
@@ -234,6 +235,7 @@ class IndexCalculation:
             #"CCCI"             --  red, redEdge, nir
             #"CVI"              --  red, green, nir
             #"GLI"              --  red, green, blue
+            #"NGE"              --  red, green, blue
             #"NDVI"             --  red, nir
             #"BNDVI"            --  blue, nir
             #"redEdgeNDVI"      --  red, redEdge
@@ -310,7 +312,7 @@ class IndexCalculation:
         #allIndex = ["ARVI2","ATSAVI","BCC","BdivG","BI","BIM","BNDVI","BWDRVI",
         "CCCI","CI","CIgreen","CIrededge","CIVE","COM1","COM2","CTVI","CVI","DVI",
         "EVI","ExG","ExG2","ExGR","EXR", "ExG_ExR",GBNDVI","GCC","GdivB","GdivR","GDVI","GEMI",
-        "GLI","GmnB","GmnR","GNDVI","GOSAVI","GRNDVI","GSAVI","HI","HUE","I","IF","IPVI",
+        "GLI","NGE", "GmnB","GmnR","GNDVI","GOSAVI","GRNDVI","GSAVI","HI","HUE","I","IF","IPVI",
         "MExG","MGVRI","MRCCbyAlper","MRVI","MSAVI","MSRGR","MyIndexi","NDI","NDRBI",
         "NDRE","NDVI","NGBDI","NGRDI","NormG","NormNIR","NormR","PNDVI","RBNDVI","RCC","RdiB",
         "redEdgeNDVI","RGBVI","RI","RmnB","RVI","SI","TGI","TNDGR","TVI","VARI","VEG"]
@@ -322,7 +324,7 @@ class IndexCalculation:
                          "MSAVI", "NormG", "NormNIR", "NormR", "NGRDI", "RI", "DVI",
                          "TVI", "NDRE", "PSRI"]
     #list of index just with RGB channels
-        #RGBIndex = ["GLI", "CI", "HUE", "I", "NGRDI", "RI", "IF",
+        #RGBIndex = ["GLI", "NGE", "CI", "HUE", "I", "NGRDI", "RI", "IF",
                     'BI','BIM','HI','NGRDI','SI','VARI','BdivG',
                     'BCC','CIVE','COM1','COM2','ExG','ExG2','ExGR','ExG_ExR','EXR',
                     'GmnB','GmnR','GdivB','GdivR','GCC','MExG','MGVRI',
@@ -360,6 +362,7 @@ class IndexCalculation:
             "CCCI": self.CCCI,
             "CVI": self.CVI,
             "GLI": self.GLI,
+            "NGE": self.NGE,
             "NDVI": self.NDVI,
             "BNDVI": self.BNDVI,
             "redEdgeNDVI": self.redEdgeNDVI,
@@ -474,6 +477,12 @@ class IndexCalculation:
         """
         return (2 * self.green - self.red - self.blue) / (
             2 * self.green + self.red + self.blue
+        )
+
+    def NGE(self):
+        '''Calculate normalized green excess index'''
+        return (self.green - (self.red + self.blue)/2) / (
+             self.green + (self.red + self.blue)/2
         )
 
     def NDVI(self):
@@ -1117,6 +1126,8 @@ with st.expander("**Information about channels**"):
             "GdivB": cl.GdivB,
             "GdivR": cl.GdivR,
             "GLI": cl.GLI,
+            "NGE": cl.NGE,
+            "NGE": cl.NGE,
             "GmnB": cl.GmnB,
             "GmnR": cl.GmnR,
             "HI": cl.HI,
@@ -1152,6 +1163,7 @@ if image_type == 'RGB':
             "ExGR": cl.ExGR,
             "EXR": cl.EXR,
             "GLI": cl.GLI,
+            "NGE": cl.NGE,
             "HI": cl.HI,
             "HUE": cl.HUE,
             "NDI": cl.NDI,
@@ -1540,6 +1552,7 @@ else:
         "GdivB": cl.GdivB,
         "GdivR": cl.GdivR,
         "GLI": cl.GLI,
+        "NGE": cl.NGE,
         "GmnB": cl.GmnB,
         "GmnR": cl.GmnR,
         "HI": cl.HI,
@@ -1581,6 +1594,7 @@ else:
         "ExGR": cl.ExGR,
         "EXR": cl.EXR,
         "GLI": cl.GLI,
+        "NGE": cl.NGE,
         "HI": cl.HI,
         "HUE": cl.HUE,
         "NDI": cl.NDI,
@@ -1600,6 +1614,7 @@ else:
         "ExGR": 0.3,
         "EXR": 0.3,
         "GLI": 0.5,
+        "NGE": 0.015,
         "HI": 0.7,
         "HUE": 120.0,
         "NDI": 0.3,
@@ -1702,7 +1717,7 @@ else:
         vi_msk_soil = st.selectbox("Select VI to mask the soil", list(vi_functions_soil.keys()), index=0)
         if vi_msk_soil in default_thresholds_MS:
             min_value = 0.0 
-            #min_value = 0.0 if vi_msk_soil in ["ExG", "ExG_ExR","ExGR", "NDI","EXR", "GLI", "HI", "NDRBI", "NGBDI", "NGRDI", "TNDGR", "VARI", "TGI", "NDVI", "GNDVI", "GRNDVI", "ATSAVI", "GOSAVI", "GSAVI", "MSAVI", "NDRE", "EVI"] else 50.0
+            #min_value = 0.0 if vi_msk_soil in ["ExG", "ExG_ExR","ExGR", "NDI","EXR", "GLI", "NGE", "HI", "NDRBI", "NGBDI", "NGRDI", "TNDGR", "VARI", "TGI", "NDVI", "GNDVI", "GRNDVI", "ATSAVI", "GOSAVI", "GSAVI", "MSAVI", "NDRE", "EVI"] else 50.0
             #max_value = 180.0 if vi_msk_soil == "HUE" else 1.0
             max_value = 1.0
             value_msk_soil = st.number_input(
